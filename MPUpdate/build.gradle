@@ -1,12 +1,30 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+def siteUrl = 'https://github.com/mapleslong'  //github主页
+
+publish{
+    userOrg = 'mapleslong'//bintray.com的用户名
+    groupId = 'com.mapleslong.android.arch.widget.update'//一个唯一值，默认包名,生成的gradle依赖前缀
+    artifactId = 'MPAutoUpdate'//远程仓库包名称
+    publishVersion = '2.0'//版本号
+    desc = 'Android更新组件'//描述，不重要
+    website = siteUrl//引用github主页
+}
+
+tasks.withType(Javadoc) {//防止编码问题
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
 
 android {
     compileSdkVersion 28
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0" }
+        versionCode 2
+        versionName "2.0.0" }
 
     buildTypes {
         release {
