@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private String url2 = "http://mhhy.dl.gxpan.cn/apk/ml/MBGYD092101/Gardenscapes-ledou-MBGYD092101.apk";
 
-
+    private MPUpdateManager mpUpdateManager;
     Button btnCancel;
     Button btnDownloadManager;
     Button btnNotification;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        mpUpdateManager = new MPUpdateManager();
     }
 
     private void initViews() {
@@ -54,44 +55,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_cancel:
-                MPUpdateManager.cancel();
+                mpUpdateManager.cancel();
                 break;
             case R.id.btn_downloadmanager:
+                mpUpdateManager.downloadDownloadManager(this, "的撒旦", "dsadsadsa", url2);
                 break;
             case R.id.btn_notification:
-                final NotificationDownloadImpl d = new NotificationDownloadImpl(this);
-                d.download("的撒旦", "dsadsadsa", url2, R.mipmap.ic_launcher, R.mipmap.ic_launcher, new MPUpdateManager.DownloadCallBack() {
+                mpUpdateManager.downloadNotificiation(this, "tongzhi", "dsadsaewrqewqew", url2, R.mipmap.ic_launcher, R.mipmap.ic_launcher_round, null);
+                break;
+            case R.id.btn_defaultDialog:
+                mpUpdateManager.downloadDefaultDialog(this, "的撒旦", "dsadsadsa", url2);
+                break;
+            case R.id.btn_customerDialog:
+                mpUpdateManager.downloadCustomer(this, "的撒旦", "dsadsadsa", url2, new MPUpdateManager.DownloadCallBack() {
                     @Override
                     public void onStart() {
-                        Log.i("test", "start");
+
                     }
 
                     @Override
-                    public void onLoading(long total, long current) {
-                        Log.i("test", "current:" + current);
+                    public void onLoading(long total, long readbyte) {
+
                     }
 
                     @Override
                     public void onComplete(String path) {
-                        Log.i("test", "compelete:" + path);
-                        startActivity(MPUpdateManager.installIntent(MainActivity.this, path));
+
                     }
 
                     @Override
                     public void onFail(Exception e) {
-                        Log.i("test", "error:" + e.getMessage());
+
                     }
 
                     @Override
-                    public void cancle() {
-                        d.cancel();
-                        Log.i("test", "cancel");
+                    public void cancel() {
+
                     }
                 });
-                break;
-            case R.id.btn_defaultDialog:
-                break;
-            case R.id.btn_customerDialog:
                 break;
             default:
                 break;

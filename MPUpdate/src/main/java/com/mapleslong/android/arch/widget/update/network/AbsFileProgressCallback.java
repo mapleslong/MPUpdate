@@ -30,5 +30,5 @@ public abstract class AbsFileProgressCallback {
     /**
      * 下载取消
      */
-    public abstract void onCancle();
+    public abstract void onCancel();
 }

@@ -197,7 +197,7 @@ public class MPUpdateDownload {
         }
 
         @Override
-        public void onCancle() {
+        public void onCancel() {
 
         }
     };
@@ -260,7 +260,7 @@ public class MPUpdateDownload {
                     public void run() {
                         if (call.isCanceled()) {
                             // 下载取消
-                            fileProgressCallback.onCancle();
+                            fileProgressCallback.onCancel();
                         } else {
                             // 下载失败
                             fileProgressCallback.onFailed(e.toString());
@@ -303,7 +303,7 @@ public class MPUpdateDownload {
                             Log.e(TAG, "onFailure:" + e.getMessage());
                             if (e.getMessage().equals("Socket closed")) {
                                 // 下载失败
-                                fileProgressCallback.onCancle();
+                                fileProgressCallback.onCancel();
                             } else {
                                 // 下载失败
                                 fileProgressCallback.onFailed(e.toString());
@@ -393,6 +393,7 @@ public class MPUpdateDownload {
         builder.writeTimeout(30000, TimeUnit.MILLISECONDS);
         builder.sslSocketFactory(sslSocketFactory, trustManager);
         builder.hostnameVerifier(DO_NOT_VERIFY);
+        builder.retryOnConnectionFailure(true);
         return builder;
     }
 
@@ -425,7 +426,7 @@ public class MPUpdateDownload {
     /**
      * 取消所有请求
      */
-    public static void cancleAll() {
+    public static void cancelAll() {
         try {
             if (mCallHashMap != null && mCallHashMap.size() > 0) {
                 //获取KEY的集合

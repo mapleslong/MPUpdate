@@ -7,14 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.mapleslong.android.arch.widget.update.MPUpdateDownload;
 import com.mapleslong.android.arch.widget.update.MPUpdateManager;
 import com.mapleslong.android.arch.widget.update.interfaces.IDownloadManager;
 import com.mapleslong.android.arch.widget.update.network.AbsFileProgressCallback;
-import com.mapleslong.android.arch.widget.update.network.DownloadModel;
 import com.mapleslong.android.arch.widget.update.utils.PathUtils;
 
 
@@ -33,19 +30,59 @@ public class NotificationDownloadImpl implements IDownloadManager {
     private static NotificationManager manager;
     private static NotificationChannel channel;
     int currentProgress = 0;
+    private int smallIconRes = 0;
+    private int largeIconRes = 0;
 
     public NotificationDownloadImpl(Context context) {
         this.mContext = context;
     }
 
 
-    public void download(final String title, final String desc, String url, String fileName, final int smallIconRes, final int largeIconRes, final MPUpdateManager.DownloadCallBack downloadCallBack) {
+    public int getSmallIconRes() {
+        return smallIconRes;
+    }
+
+    public void setSmallIconRes(int smallIconRes) {
+        this.smallIconRes = smallIconRes;
+    }
+
+    public int getLargeIconRes() {
+        return largeIconRes;
+    }
+
+    public void setLargeIconRes(int largeIconRes) {
+        this.largeIconRes = largeIconRes;
+    }
+
+    /**
+     * 关闭通知
+     */
+    private void closeNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //关闭通知通道
+            manager.deleteNotificationChannel(String.valueOf(notifyId));
+        }
+        manager.cancel(notifyId);
+    }
+
+
+    /**
+     * 开始下载
+     *
+     * @param title            下载标题
+     * @param desc             下载内容描述
+     * @param url              下载地址
+     * @param downloadCallBack 回调方法
+     */
+    @Override
+    public void download(final String title, final String desc, String url, final MPUpdateManager.DownloadCallBack downloadCallBack) {
         //先取消之前的下载
         if (MPUpdateDownload.isDownloading()) {
-            MPUpdateDownload.cancleAll();
+            MPUpdateDownload.cancelAll();
             MPUpdateDownload.setIsDownloading(false);
         }
-        String filePath = getDownalodPath() + "/" + fileName;
+        String fileName = url.endsWith("apk") ? url.substring(url.lastIndexOf("/"), url.length()) : "update.apk";
+        String filePath = PathUtils.getCachePath(mContext) + "/" + fileName;
         manager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             channel = new NotificationChannel(String.valueOf(notifyId), CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
@@ -68,11 +105,12 @@ public class NotificationDownloadImpl implements IDownloadManager {
                     downloadCallBack.onStart();
                 }
                 MPUpdateDownload.setIsDownloading(true);
+                currentProgress = 0;
                 builder.setContentTitle(title)
                         .setContentText(desc)
                         .setWhen(System.currentTimeMillis())
-                        .setSmallIcon(smallIconRes)
-                        .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), largeIconRes))
+                        .setSmallIcon(getSmallIconRes())
+                        .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), getLargeIconRes()))
                         .setProgress(100, 0, false);
                 manager.notify(notifyId, builder.build());
             }
@@ -100,6 +138,7 @@ public class NotificationDownloadImpl implements IDownloadManager {
                 if (downloadCallBack != null) {
                     downloadCallBack.onComplete(result);
                 }
+                MPUpdateManager.installIntent(mContext, result);
                 closeNotification();
             }
 
@@ -110,55 +149,24 @@ public class NotificationDownloadImpl implements IDownloadManager {
                 if (downloadCallBack != null) {
                     downloadCallBack.onFail(new Exception(errorMsg));
                 }
-                Log.e("test", errorMsg);
                 closeNotification();
             }
 
             @Override
-            public void onCancle() {
+            public void onCancel() {
                 MPUpdateDownload.setIsDownloading(false);
                 if (downloadCallBack != null) {
-                    downloadCallBack.cancle();
+                    downloadCallBack.cancel();
                 }
                 closeNotification();
             }
         });
     }
 
-    private void closeNotification() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //关闭通知通道
-            manager.deleteNotificationChannel(String.valueOf(notifyId));
-        }
-        manager.cancel(notifyId);
-    }
-
-    /**
-     * 设置下载路径
-     *
-     * @return
-     */
-    @Override
-    public String getDownalodPath() {
-        return PathUtils.getCachePath(mContext);
-    }
-
-    /**
-     * 开始下载
-     *
-     * @param title 下载标题
-     * @param desc  下载内容描述
-     * @param url   下载地址
-     * @return
-     */
-    @Override
-    public void download(String title, String desc, String url) {
-
-    }
 
     @Override
     public void cancel() {
-        MPUpdateDownload.cancleAll();
+        MPUpdateDownload.cancelAll();
         closeNotification();
     }
 
