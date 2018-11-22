@@ -11,6 +11,22 @@ import java.util.Map;
  */
 public class DownloadModel {
     /**
+     * 标题
+     */
+    String title;
+    /**
+     * 描述
+     */
+    String desc;
+    /**
+     * 通知栏小图标(非必须)
+     */
+    int iconSmallResId;
+    /**
+     * 通知栏图标(非必须)
+     */
+    int iconLargeResId;
+    /**
      * 请求地址
      */
     private String httpUrl;
@@ -31,6 +47,38 @@ public class DownloadModel {
      * 文件下载进度
      */
     private AbsFileProgressCallback fileProgressCallback;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public int getIconSmallResId() {
+        return iconSmallResId;
+    }
+
+    public void setIconSmallResId(int iconSmallResId) {
+        this.iconSmallResId = iconSmallResId;
+    }
+
+    public int getIconLargeResId() {
+        return iconLargeResId;
+    }
+
+    public void setIconLargeResId(int iconLargeResId) {
+        this.iconLargeResId = iconLargeResId;
+    }
 
     public String getHttpUrl() {
         return httpUrl;

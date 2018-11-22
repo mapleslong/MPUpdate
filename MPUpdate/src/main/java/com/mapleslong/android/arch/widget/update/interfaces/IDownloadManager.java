@@ -25,4 +25,8 @@ public interface IDownloadManager {
      */
     void download(String title, String desc, String url);
 
+    /**
+     * 取消下载
+     */
+    void cancel();
 }

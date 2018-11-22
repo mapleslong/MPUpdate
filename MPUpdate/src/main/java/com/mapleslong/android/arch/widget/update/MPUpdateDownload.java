@@ -36,8 +36,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * 创建时间: 2018/11/21
  * 描述:
@@ -46,6 +44,16 @@ import static android.content.ContentValues.TAG;
  * @version 1.0
  */
 public class MPUpdateDownload {
+    public static final String TAG = MPUpdateDownload.class.getSimpleName();
+
+    public static MPUpdateDownload getInstance() {
+        return MPUpdateDownloadHolder.instance;
+    }
+
+    public static class MPUpdateDownloadHolder {
+        private static final MPUpdateDownload instance = new MPUpdateDownload();
+    }
+
     /**
      * 请求的集合
      */
@@ -106,6 +114,7 @@ public class MPUpdateDownload {
 
     /**
      * 保存tag
+     *
      * @param tag
      * @return
      */
@@ -136,6 +145,7 @@ public class MPUpdateDownload {
         downloadModel.getHeadersMap().put(headerKey, headerValue);
         return instance;
     }
+
     /**
      * 是否正在下载
      */
@@ -143,6 +153,9 @@ public class MPUpdateDownload {
         return isDownloading;
     }
 
+    public static void setIsDownloading(boolean downloading) {
+        isDownloading = downloading;
+    }
 
     /**
      * 上传下载进度回调
@@ -157,7 +170,6 @@ public class MPUpdateDownload {
         //开始请求
         startDonwload();
     }
-
 
     /**
      * 默认AbsFileProgressCallback
@@ -281,7 +293,7 @@ public class MPUpdateDownload {
                         @Override
                         public void run() {
                             // 下载完成
-                            fileProgressCallback.onSuccess("");
+                            fileProgressCallback.onSuccess(downloadPath);
                         }
                     });
                 } catch (final Exception e) {
@@ -389,7 +401,7 @@ public class MPUpdateDownload {
      *
      * @param tag
      */
-    public static void cancle(Object tag) {
+    public static void cancel(Object tag) {
         try {
             if (mCallHashMap != null && mCallHashMap.size() > 0) {
                 if (mCallHashMap.containsKey(tag)) {

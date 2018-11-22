@@ -2,8 +2,13 @@ package com.mapleslong.android.arch.widget.updatedemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.mapleslong.android.arch.widget.update.MPUpdateManager;
+import com.mapleslong.android.arch.widget.update.impl.NotificationDownloadImpl;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     /**
@@ -31,16 +36,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initViews() {
-        btnDefaultDialog = findViewById(R.id.btn_defaultDialog);
         btnCancel = findViewById(R.id.btn_cancel);
-        btnNotification = findViewById(R.id.btn_notification);
         btnDownloadManager = findViewById(R.id.btn_downloadmanager);
+        btnNotification = findViewById(R.id.btn_notification);
+        btnDefaultDialog = findViewById(R.id.btn_defaultDialog);
         btnCustomerDialog = findViewById(R.id.btn_customerDialog);
+
+        btnCancel.setOnClickListener(this);
+        btnDownloadManager.setOnClickListener(this);
+        btnNotification.setOnClickListener(this);
+        btnDefaultDialog.setOnClickListener(this);
+        btnCustomerDialog.setOnClickListener(this);
+
     }
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_cancel:
+                MPUpdateManager.cancel();
+                break;
+            case R.id.btn_downloadmanager:
+                break;
+            case R.id.btn_notification:
+                final NotificationDownloadImpl d = new NotificationDownloadImpl(this);
+                d.download("的撒旦", "dsadsadsa", url2, R.mipmap.ic_launcher, R.mipmap.ic_launcher, new MPUpdateManager.DownloadCallBack() {
+                    @Override
+                    public void onStart() {
+                        Log.i("test", "start");
+                    }
 
+                    @Override
+                    public void onLoading(long total, long current) {
+                        Log.i("test", "current:" + current);
+                    }
+
+                    @Override
+                    public void onComplete(String path) {
+                        Log.i("test", "compelete:" + path);
+                        startActivity(MPUpdateManager.installIntent(MainActivity.this, path));
+                    }
+
+                    @Override
+                    public void onFail(Exception e) {
+                        Log.i("test", "error:" + e.getMessage());
+                    }
+
+                    @Override
+                    public void cancle() {
+                        d.cancel();
+                        Log.i("test", "cancel");
+                    }
+                });
+                break;
+            case R.id.btn_defaultDialog:
+                break;
+            case R.id.btn_customerDialog:
+                break;
+            default:
+                break;
+        }
     }
 }
 

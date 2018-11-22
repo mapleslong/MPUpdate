@@ -77,21 +77,21 @@ public class DownloadManagerImpl implements IDownloadManager {
         if (c.moveToFirst()) {
             int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
             switch (status) {
-                //下载暂停
+                // 下载暂停
                 case DownloadManager.STATUS_PAUSED:
                     break;
-                //下载延迟
+                // 下载延迟
                 case DownloadManager.STATUS_PENDING:
                     break;
-                //正在下载
+                // 正在下载
                 case DownloadManager.STATUS_RUNNING:
                     break;
-                //下载完成
+                // 下载完成
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    //下载完成安装APK
+                    // 下载完成安装APK
                     installAPK();
                     break;
-                //下载失败
+                // 下载失败
                 case DownloadManager.STATUS_FAILED:
                     Toast.makeText(mContext, "更新下载失败", Toast.LENGTH_SHORT).show();
                     break;
