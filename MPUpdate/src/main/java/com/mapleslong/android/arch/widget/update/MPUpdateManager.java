@@ -1,6 +1,7 @@
 package com.mapleslong.android.arch.widget.update;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -106,6 +107,13 @@ public class MPUpdateManager {
         downloadManager = new CustomerDownloadImpl(context);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         final AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                resetDownloadManager();
+                MPUpdateDownload.cancelAll();
+            }
+        });
         downloadManager.download(title, desc, url, new DownloadCallBack() {
             @Override
             public void onStart() {
@@ -122,16 +130,19 @@ public class MPUpdateManager {
             @Override
             public void onComplete(String path) {
                 dialog.dismiss();
-                installIntent(context, path);
+                context.startActivity(installIntent(context, path));
             }
 
             @Override
             public void onFail(Exception e) {
+                cancel();
                 Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void cancel() {
+                resetDownloadManager();
+                MPUpdateDownload.cancelAll();
             }
         });
     }
